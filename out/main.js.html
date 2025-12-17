@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: main.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: main.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Two from 'two.js';
+
+const container = document.getElementById('game-canvas');
+
+const params = {
+    autostart: true,
+    height: container.clientHeight,
+    width: container.clientWidth,
+    type: Two.Types.svg,
+};
+const two = new Two(params).appendTo(container);
+
+const R = 30;
+const r = Math.sqrt(R ** 2 - (R / 2) ** 2)
+const sides = 6;
+const padding = 5;
+const min_l = 15, max_l = 65;
+const max_value = 100;
+
+/**
+ * Represents a Cell
+ * 
+ */
+class Cell {
+
+    /**
+     * Indicates default cell color
+     *
+     * @memberof Cell
+     */
+    static DEFAULT_COLOR = 'rgba(0, 0, 0, 0.2)'
+
+    /**
+     * Creates an instance of Cell.
+     * @param {number} x X coordinate in field
+     * @param {number} y Y coordinate in field
+     * @param {number} value Cell value
+     * @param {string} [color={@link Cell.DEFAULT_COLOR}] Cell color (default: {@link Cell.DEFAULT_COLOR})
+     * @param {boolean} is_visible Defines is the cell visible on field(default: false)
+     */
+    constructor(x, y, value, color = Cell.DEFAULT_COLOR, is_visible = false) {
+        this.x = x;
+        this.y = y;
+        this.value = value;
+        this.color = color;
+        this.is_visible = is_visible;
+    }
+
+    /**
+     * Paints Cell with a specified color
+     *
+     * @param {string} color
+     */
+    paint(color) {
+        this.color = color;
+    }
+}
+
+/**
+ * Represents a Player
+ *
+ */
+class Player {
+    /**
+     * Creates an instance of Player.
+     * @param {string} color Players color
+     * @param {Cell[]} cells Array of player cells
+     * @param {string} name Players name
+     */
+    constructor(color, cells, name) {
+        this.color = color;
+        this.cells = cells.map(cell => new Cell(
+            cell.x,
+            cell.y,
+            cell.value,
+            this.color,
+            true
+        ));
+        this.name = name;
+    }
+}
+
+/**
+ * Reperesents a Field
+ * 
+ */
+class Field {
+
+    /**
+     * Creates an instance of Field.
+     * @param {Cell[][]} cells
+     * @param {Player[]} players
+     */
+    constructor(cells, players) {
+        /**
+         * Width of the field
+         * 
+         * @type {number}
+         */
+        this.width = cells[0]?.length || 0;
+        /**
+         * Height of the field
+         * 
+         * @type {number}
+         */
+        this.height = cells.length || 0;
+        /**
+         * Field represented by cells
+         * 
+         * @type {number}
+         */
+        this.cells = cells.map(row => {
+            row.map(cell => {
+                new Cell(
+                    cell.x,
+                    cell.y,
+                    cell.value,
+                    cell.color
+                )
+            });
+        });
+        this.players = players.map(player => new Player(
+            player.color,
+            player.cells,
+            player.name
+        ));
+        this.players.forEach(player => {
+            player.cells.forEach(cell => {
+                this.cells[cell.x][cell.y] = cell;
+            });
+        });
+    }
+}
+
+/**
+ * Represents a Tick
+ *
+ */
+class TickView {
+    /**
+     * Creates an instance of Tick.
+     * @param {number} step
+     * @param {Field} field
+     */
+    constructor(step, field) {
+        this.step = step;
+        this.field = field;
+    }
+
+    /**
+     *
+     * Shows current visualization
+     */
+    show() {
+
+    }
+}
+
+/**
+ * Represents a Visualization
+ *
+ */
+class Visualization {
+    /**
+     * Creates an instance of Visualization.
+     */
+    constructor() {
+        this.ticks = []
+    }
+
+    /**
+     *
+     * Adds tick into visualization
+     * @param {number} tick
+     */
+    add_tick(tick) {
+        this.ticks.push(tick)
+    }
+
+    /**
+     *
+     * Returns tick of visualization by number
+     * @param {number} idx
+     * @return {TickView} 
+     */
+    get_tick(idx) {
+        return this.ticks[idx]
+    }
+}
+
+// const w_n = 10;
+// const h_n = Math.floor((container.clientHeight - r) / r);
+const field = two.makeGroup()
+
+var hexagons = []
+for (let i = 0; ; i++) {
+    hexagons.push([]);
+    const y = padding + r + i * r + i * padding / 2;
+    if (y + r + padding >= container.clientHeight) {
+        break;
+    }
+    for (let j = 0; ; j++) {
+        if (Math.random() > 0.3) {
+
+            const x = padding + R + j * 3 * R + 2 * padding * j + (i % 2) * padding + R * 1.5 * (i % 2);
+            if (x + R + padding >= container.clientWidth) {
+                break;
+            }
+            console.log(y + R)
+
+            const hexagon = two.makePolygon(0, 0, R, sides);
+            hexagon.fill = 'rgba(0, 0, 0, 0.2)';
+            hexagon.stroke = '#00a8ff';
+            hexagon.linewidth = 1;
+
+
+            var value = Math.random() > 0.5 ? Math.ceil(100 * Math.random()) : 0;
+            const ratio = Math.min(value / max_value, 1);
+            const light = max_l - (ratio * (max_l - min_l));
+
+            if (value !== 0) {
+                hexagon.fill = `hsl(200, 70%, ${light}%)`;
+            }
+
+            const text = two.makeText(`${value}`, 0, 0);
+            text.fill = value !== 0 ? 'white' : 'transparent';
+            text.size = 12;
+            text.weight = 700;
+            text.family = 'sans-serif';
+
+            const group = two.makeGroup();
+
+            group.add(hexagon, text);
+            group.translation.set(x, y);
+
+            hexagons[i].push(group);
+            field.add(group)
+        } else {
+            hexagons[i].push(null);
+        }
+    }
+}
+
+setupInteractions(two);
+
+function setupInteractions(instance) {
+    const svg = instance.renderer.domElement;
+    var on = false;
+
+    const getShape = (e) => {
+        if (e.target.tagName === 'path') {
+            return instance.scene.getById(e.target.id);
+        }
+        return null;
+    };
+
+    svg.addEventListener('mouseover', (e) => {
+        const shape = getShape(e);
+        if (shape) {
+            shape.scale = 1.05;
+        }
+    });
+
+    svg.addEventListener('mouseout', (e) => {
+        const shape = getShape(e);
+        if (shape) {
+            shape.scale = 1.0;
+        }
+    });
+
+    svg.addEventListener('click', (e) => {
+        const shape = getShape(e);
+        if (shape) {
+            if (shape.stroke === '#f5f6fa') {
+                shape.stroke = '#00a8ff';
+            } else {
+                shape.stroke = '#f5f6fa';
+            }
+            if (shape.linewidth == 4) {
+                shape.linewidth = 1;
+            } else {
+                shape.linewidth = 4;
+            }
+            on = ~on;
+        }
+    });
+}
+
+two.update();
+// console.log(hexagons)
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Cell.html">Cell</a></li><li><a href="Field.html">Field</a></li><li><a href="Player.html">Player</a></li><li><a href="TickView.html">TickView</a></li><li><a href="Visualization.html">Visualization</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Dec 17 2025 12:42:14 GMT+0300 (Moscow Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

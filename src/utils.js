@@ -1,0 +1,200 @@
+/**
+ * Represents a Cell
+ * 
+ */
+class Cell {
+
+    /**
+     * Indicates default cell color
+     *
+     * @memberof Cell
+     */
+    static DEFAULT_COLOR = 'rgba(0, 0, 0, 0.2)'
+
+    /**
+     * Creates an instance of Cell.
+     * @param {number} x X coordinate in field
+     * @param {number} y Y coordinate in field
+     * @param {number} value Cell value
+     * @param {string} [color={@link Cell.DEFAULT_COLOR}] Cell color
+     * @param {number} [capacity=8] Max value in the Cell
+     */
+    constructor(x, y, value, color = Cell.DEFAULT_COLOR, capacity = 8) {
+        /** 
+         * X coordinate of the Cell
+         * 
+         * @type {number}
+         */
+        this.x = x;
+        /** 
+         * Y coordinate of the Cell
+         * 
+         * @type {number}
+         */
+        this.y = y;
+        /** 
+         * X Cell's value
+         * 
+         * @type {number}
+         */
+        this.value = value;
+        /** 
+         * Cell's color
+         * 
+         * @type {string}
+         */
+        this.color = color;
+        /** 
+         * Cell's capacity
+         * 
+         * @type {number}
+         */
+        this.capacity = capacity;
+    }
+
+    /**
+     * Paints Cell with a specified color
+     *
+     * @param {string} color New cell color
+     */
+    paint(color) {
+        this.color = color;
+    }
+}
+
+/**
+ * Represents a Player
+ *
+ */
+class Player {
+    /**
+     * Creates an instance of Player.
+     * @param {string} color Players color
+     * @param {Cell[]} cells Array of player cells
+     * @param {string} name Players name
+     */
+    constructor(color, cells, name) {
+        /** 
+         * Player's color
+         * 
+         * @type {string}
+         */
+        this.color = color;
+        /** 
+         * Player's cells
+         * 
+         * @type {Cell[]}
+         */
+        this.cells = cells;
+        this.cells.forEach(cell => {
+            cell.paint(this.color);
+        });
+        /** 
+         * Player's name
+         * 
+         * @type {string}
+         */
+        this.name = name;
+    }
+}
+
+/**
+ * Reperesents a Field
+ * 
+ */
+class Field {
+    /**
+     * Creates an instance of Field.
+     * @param {Cell[]} cells Cells, presenting a field
+     */
+    constructor(cells) {
+        /**
+         * Field represented by cells
+         * 
+         * @type {Cell[]}
+         */
+        this.cells = cells
+    }
+}
+
+/**
+ * Represents a Tick
+ *
+ */
+class TickView {
+    /**
+     * Creates an instance of Tick.
+     * @param {number} step Tick number
+     * @param {Field} field Game field instance
+     * @param {Player[]} players Players playing the game
+     */
+    constructor(step, field, players) {
+        /** 
+         * Tick number
+         * 
+         * @type {string}
+         */
+        this.step = step;
+        /** 
+         * Tick field
+         * 
+         * @type {Field}
+         */
+        this.field = field;
+        /** 
+         * Current players
+         * 
+         * @type {Player[]}
+         */
+        this.players = players;
+    }
+
+    /**
+     *
+     * Shows current tick of visualization
+     */
+    show() {
+
+    }
+}
+
+/**
+ * Represents a Visualization
+ *
+ */
+class Visualization {
+    /**
+     * Creates an instance of Visualization.
+     * @param {TickView[]} [ticks=[]] Array of ticks representing the visuaization
+     */
+    constructor(ticks = []) {
+        /** 
+         * Steps of visualization
+         * 
+         * @type {TickView[]}
+         */
+        this.ticks = ticks
+    }
+
+    /**
+     *
+     * Adds tick into visualization
+     * @param {number} tick
+     */
+    add_tick(tick) {
+        this.ticks.push(tick)
+    }
+
+    /**
+     *
+     * Returns tick of visualization by number
+     * @param {number} idx
+     * @return {TickView} 
+     */
+    get_tick(idx) {
+        return this.ticks[idx]
+    }
+}
+
+
+export {Cell, Player, Field, TickView, Visualization}

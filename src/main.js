@@ -1,5 +1,7 @@
 import Two from 'two.js';
 
+import {Field, Cell, Player, TickView, Visualization} from './utils';
+
 const container = document.getElementById('game-canvas');
 
 const params = {
@@ -14,59 +16,62 @@ const R = 30;
 const r = Math.sqrt(R ** 2 - (R / 2) ** 2)
 const sides = 6;
 const padding = 5;
-const min_l = 15, max_l = 65;
-const max_value = 100;
-
+const min_l = 20, max_l = 50;
+const max_value = 8;
 
 // const w_n = 10;
 // const h_n = Math.floor((container.clientHeight - r) / r);
 const field = two.makeGroup()
 
-var hexagons = []
 for (let i = 0; ; i++) {
-    hexagons.push([]);
     const y = padding + r + i * r + i * padding / 2;
     if (y + r + padding >= container.clientHeight) {
-        break;  
+        break;
     }
     for (let j = 0; ; j++) {
         if (Math.random() > 0.3) {
-            
+
             const x = padding + R + j * 3 * R + 2 * padding * j + (i % 2) * padding + R * 1.5 * (i % 2);
             if (x + R + padding >= container.clientWidth) {
-                break;  
+                break;
             }
-            console.log(y + R)
 
             const hexagon = two.makePolygon(0, 0, R, sides);
-            hexagon.fill = 'rgba(0, 0, 0, 0.2)';
-            hexagon.stroke = '#00a8ff';
-            hexagon.linewidth = 1;
+            hexagon.fill = 'rgba(171, 171, 171, 0.04)';
+            hexagon.linewidth = 0;
 
-
-            var value = Math.random() > 0.5? Math.ceil(100 * Math.random()): 0;
+            const inner_hexagon = two.makePolygon(0, 0, r * 0.9, sides);
+            inner_hexagon.fill = 'rgba(54, 48, 48, 1)';
+            hexagon.id = `hexagon_id=${i}_${j}`;
+            inner_hexagon.rotation = Math.PI / 6;
+            inner_hexagon.id = `inner_hexagon_id=${i}_${j}`
+            inner_hexagon.linewidth = 1;
+            two.update();
+            inner_hexagon._renderer.elem.classList.add("untouchable");
+            
+            var value = 0;
+            var value = Math.random() > 0.5 ? Math.ceil(max_value * Math.random()) : 0;
             const ratio = Math.min(value / max_value, 1);
             const light = max_l - (ratio * (max_l - min_l));
             
             if (value !== 0) {
-                hexagon.fill = `hsl(200, 70%, ${light}%)`;
+                inner_hexagon.fill = `hsl(200, 30%, ${light}%)`;
             }
             
+            
             const text = two.makeText(`${value}`, 0, 0);
-            text.fill = value !== 0? 'white': 'transparent';
+            text.fill = value !== 0 ? 'white' : 'transparent';
             text.size = 12;
-            text.weight = 700;  
+            text.weight = 700;
             text.family = 'sans-serif';
             
             const group = two.makeGroup();
-            
-            group.add(hexagon, text);
+            const hg = two.makeGroup(hexagon, inner_hexagon);
+            group.add(hg, text);
             group.translation.set(x, y);
-
-            hexagons[i].push(group);
             field.add(group)
+            two.update();
         } else {
-            hexagons[i].push(null);
         }
     }
 }
@@ -74,8 +79,10 @@ for (let i = 0; ; i++) {
 setupInteractions(two);
 
 function setupInteractions(instance) {
+
+    var result = new Set()
+
     const svg = instance.renderer.domElement;
-    var on = false;
 
     const getShape = (e) => {
         if (e.target.tagName === 'path') {
@@ -84,37 +91,28 @@ function setupInteractions(instance) {
         return null;
     };
 
-    svg.addEventListener('mouseover', (e) => {
-        const shape = getShape(e);
-        if (shape) {
-            shape.scale = 1.05; 
-        }
-    });
-
-    svg.addEventListener('mouseout', (e) => {
-        const shape = getShape(e);
-        if (shape) {
-            shape.scale = 1.0;
-        }
-    });
-
     svg.addEventListener('click', (e) => {
         const shape = getShape(e);
         if (shape) {
-            if (shape.stroke === '#f5f6fa') {
-                shape.stroke = '#00a8ff';
+            if (shape.id) {
+                if (result.has(shape.id)) {
+                    result.delete(shape.id);
+                } else {
+                    result.add(shape.id);
+                }
+            } 
+            if (shape.stroke == "") {
+                shape.noStroke();
             } else {
                 shape.stroke = '#f5f6fa';
             }
-            if (shape.linewidth == 4) {
-                shape.linewidth = 1;
-            } else {
+            if (!shape.linewidth) {
                 shape.linewidth = 4;
+            } else {
+                shape.linewidth = 0;
             }
-            on = ~on;
         }
     });
 }
 
 two.update();
-// console.log(hexagons)
