@@ -1,0 +1,12 @@
+:root {
+    --primary-bg-color: #353b48;
+}
+* {
+    margin: none;
+    padding: none;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--primary-bg-color);
+}
