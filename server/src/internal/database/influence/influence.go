@@ -51,12 +51,13 @@ func (r *InfluenceDBRepoImpl) Register(id int64, name string) error {
 type User struct {
 	ID   int64  `db:"id"`
 	Name string `db:"name"`
+	RegisteredAt string `db:"registered_at"`
 }
 
 func (r *InfluenceDBRepoImpl) GetSimulationPlayers(id uuid.UUID) ([]User, error) {
 	users := make([]User, 0)
 	err := r.db.Select(
-		users,
+		&users,
 		`
 		SELECT
 			u.*
@@ -73,14 +74,14 @@ func (r *InfluenceDBRepoImpl) GetSimulationPlayers(id uuid.UUID) ([]User, error)
 			ON
 				i.uid = u.id
 		ORDER BY
-			i.order
+			i.sorder
 		`,
 		id,
 	)
 	if err != nil {
 		return nil, err
 	}
-
+	
 	return users, nil
 }
 
@@ -99,7 +100,7 @@ func (r *InfluenceDBRepoImpl) GetSimulation(id uuid.UUID) (*simulation_types.Sim
 
 	simdata := make([]byte, 0)
 	mapdata := make([]byte, 0)
-
+	fmt.Println(id);
 	err = r.db.QueryRowx(
 		`
 		SELECT
@@ -124,11 +125,11 @@ func (r *InfluenceDBRepoImpl) GetSimulation(id uuid.UUID) (*simulation_types.Sim
 			ON
 				s.map_id = m.id
 		WHERE
-			id = $1
+			s.id = $1
 		`,
 		id,
 	).Scan(
-		simdata,
+		&simdata,
 		&simulation.QueuedAt,
 		&simulation.StartedAt,
 		&simulation.FinishedAt,
@@ -137,14 +138,13 @@ func (r *InfluenceDBRepoImpl) GetSimulation(id uuid.UUID) (*simulation_types.Sim
 		&simulation.Map.Name,
 	)
 
+	// fmt.Println(mapdata);
 	if err != nil {
 		return nil, err
 	}
-
-	if err := proto.Unmarshal(simdata, &simulation.Data); err != nil {
+	if err := json.Unmarshal(simdata, &simulation.Data); err != nil {
 		return nil, err
 	}
-
 	if err := proto.Unmarshal(mapdata, &simulation.Map.Data); err != nil {
 		return nil, err
 	}

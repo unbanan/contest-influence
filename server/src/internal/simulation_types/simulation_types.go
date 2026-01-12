@@ -16,8 +16,8 @@ type Simulation struct {
 	Data       proto.Simulation `json:"data"`
 	Players    []string         `json:"players"`
 	QueuedAt   time.Time        `json:"queued_at"`
-	StartedAt  time.Time        `json:"starterd_at"`
-	FinishedAt time.Time        `json:"finished_at"`
+	StartedAt  *time.Time       `json:"starterd_at"`
+	FinishedAt *time.Time       `json:"finished_at"`
 	State      string           `json:"state"`
 }
 

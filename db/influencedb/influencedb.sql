@@ -13,7 +13,7 @@ CREATE TABLE influence.strategies(
     uid BIGINT,
     code BYTEA,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    rate NUMBER DEFAULT NULL
+    rate INTEGER DEFAULT NULL
 );
 
 CREATE INDEX strategies_uid_created_at_index ON influence.strategies (uid, created_at);
@@ -30,8 +30,8 @@ CREATE TYPE influence.simulation_state AS ENUM (
 CREATE TABLE influence.users_simulations(
     uid BIGINT NOT NULL REFERENCES influence.users(id),
     sid UUID NOT NULL REFERENCES influence.simulations(id),
-    order INT NOT NULL
-)
+    sorder INTEGER NOT NULL
+);
 
 CREATE INDEX users_simulations_uid_index ON influence.users_simulations (uid);
 CREATE INDEX users_simulations_sid_index ON influence.users_simulations (sid);
@@ -54,6 +54,6 @@ CREATE TABLE influence.maps(
     data BYTEA,
     name TEXT NOT NULL,
     meta TEXT
-)
+);
 
-CREATE INDEX influence.maps_id_index ON influence.maps (id);
+CREATE INDEX maps_id_index ON influence.maps (id);
