@@ -91,7 +91,8 @@
     let grid: GridCell[][];
 
     let currentTickIndex = 0;
-    let isPlaying = true;
+    let isPlaying = false;
+
 
     $: if (grid && ticks[currentTickIndex]) {
         showTick(ticks[currentTickIndex], grid, two);
@@ -117,7 +118,6 @@
 
         grid = [];
         initGrid(two, field, grid, R, R, sides, text_size, ticks);
-        // console.log(ticks[0].field);
         let id = 1;
         for (let round of rounds) {
             for (let move of round.attack.moves) {
@@ -129,7 +129,6 @@
                 if (move.is_winner) {
                     ticks[id].field[move.to.row][move.to.col].color = ticks[id].field[move.from.row][move.from.col].color;
                 }  
-                // console.log(ticks[id]);
                 id++;
             }
             for (let cell of round.defence.cells) {
@@ -137,16 +136,9 @@
                     field: structuredClone(ticks[id - 1].field),
                 };
                 ticks[id].field[cell.row][cell.col].value = cell.value;
-                // console.log(ticks[id]);
                 id++;
             }
         }
-        // (async () => {
-        //     for (let tick of ticks) {
-        //         showTick(tick, grid, two);
-        //         await wait(2000);
-        //     }
-        // })();
         
     })
 
@@ -241,14 +233,6 @@
             -bounds.left + (two.width - bounds.width) / 2,
             -bounds.top + (two.height - bounds.height) / 2
         );
-        
-        // const background = two.makeRectangle(
-        //     two.width / 2,
-        //     two.height / 2,
-        //     bounds.width + 40,
-        //     bounds.height + 40
-        // );
-        // background.fill = 'rgba(50, 50, 50, 0.06)';
 
         two.update();
         for (let i = 0; i < h_n; i++) {
@@ -280,7 +264,7 @@
             const light = max_l - (ratio * (max_l - min_l));
             return get_hsla_color(hue, 30, light);
         }
-        return 'hsla(0, 0%, 67%, 0.06)';
+        return 'hsla(0, 6%, 20%, 1)';
     }
 
     function calc_radius(container: HTMLElement) {
@@ -319,52 +303,72 @@
     
     $: inputValue = currentTickIndex.toString();
 
+    let playbackSpeed = 1.0;
+    let animationInterval: number | null = null;
+
+
+    function togglePlayPause() {
+        if (isPlaying) {
+            pauseAnimation();
+        } else {
+            playAnimation();
+        }
+    }
+
+    function playAnimation() {
+        if (isPlaying) return;
+        
+        isPlaying = true;
+        const interval = 1000 / playbackSpeed;
+        
+        animationInterval = window.setInterval(() => {
+            if (currentTickIndex < ticks.length - 1) {
+                currentTickIndex++;
+            } else {
+                pauseAnimation();
+            }
+        }, interval);
+    }
+
+    function pauseAnimation() {
+        isPlaying = false;
+        if (animationInterval !== null) {
+            clearInterval(animationInterval);
+            animationInterval = null;
+        }
+    }
+
+    function increaseSpeed() {
+        playbackSpeed = Math.min(playbackSpeed + 0.5, 5.0);
+        if (isPlaying) {
+            pauseAnimation();
+            playAnimation();
+        }
+    }
+
+    function decreaseSpeed() {
+        playbackSpeed = Math.max(playbackSpeed - 0.5, 0.5);
+        if (isPlaying) {
+            pauseAnimation();
+            playAnimation();
+        }
+    }
+
+    function resetAnimation() {
+        pauseAnimation();
+        currentTickIndex = 0;
+        playbackSpeed = 1.0;
+    }
+
+    import { onDestroy } from 'svelte';
+    onDestroy(() => {
+        if (animationInterval !== null) {
+            clearInterval(animationInterval);
+        }
+    });
+
 </script>
 
-<!-- <div id="full-visualizer">
-    <div id="game-canvas" bind:this={container}></div>
-    <div class="controls">
-        <div class="slider-container">
-            <input 
-                type="range" 
-                min="0" 
-                max={ticks.length - 1} 
-                bind:value={currentTickIndex} 
-                class="slider"
-            />
-            <div class="frame-input-container">
-                <input
-                    type="number"
-                    bind:value={inputValue}
-                    on:keypress={handleKeyPress}
-                    min="0"
-                    max={ticks.length - 1}
-                    class="frame-input"
-                />
-                <span class="total-frames">/ {ticks.length - 1}</span>
-            </div>
-        </div>
-        
-        <div class="info">
-            Тик: {currentTickIndex} / {ticks.length - 1}
-        </div>
-        
-        <div class="buttons">
-            <button on:click={() => currentTickIndex = 0} class="btn">
-                Начало
-            </button>
-            <button on:click={() => currentTickIndex > 0 ? currentTickIndex-- : null} class="btn">
-                Назад
-            </button>
-            <button on:click={() => currentTickIndex < ticks.length - 1 ? currentTickIndex++ : null} class="btn">
-                Вперед
-            </button>
-            <button on:click={() => currentTickIndex = ticks.length - 1} class="btn">
-                Конец
-            </button>
-        </div>
-    </div>
-</div> -->
 
 <div id="visualizer-container">
     <div class="canvas-wrapper">
@@ -379,6 +383,7 @@
                 max={ticks.length - 1} 
                 bind:value={currentTickIndex} 
                 class="slider"
+                title="Перемотка по кадрам"
             />
             <div class="frame-input-container">
                 <input
@@ -388,65 +393,60 @@
                     min="0"
                     max={ticks.length - 1}
                     class="frame-input"
+                    title="Номер кадра"
                 />
                 <span class="total-frames">/ {ticks.length - 1}</span>
             </div>
         </div>
         
-        <div class="info">
-            Тик: {currentTickIndex} / {ticks.length - 1}
-        </div>
-        
-        <div class="buttons">
-            <button on:click={() => currentTickIndex = 0} class="btn">Начало</button>
-            <button on:click={() => currentTickIndex > 0 ? currentTickIndex-- : null} class="btn">Назад</button>
-            <button on:click={() => currentTickIndex < ticks.length - 1 ? currentTickIndex++ : null} class="btn">Вперед</button>
-            <button on:click={() => currentTickIndex = ticks.length - 1} class="btn">Конец</button>
+        <div class="compact-controls">
+            <div class="nav-buttons">
+                <button on:click={() => currentTickIndex = 0} class="icon-btn" title="В начало">
+                    ⏮️
+                </button>
+                <button on:click={() => currentTickIndex > 0 ? currentTickIndex-- : null} class="icon-btn" title="Предыдущий кадр">
+                    ◀️
+                </button>
+                
+                <button on:click={togglePlayPause} class="icon-btn play-btn" title="{isPlaying ? 'Пауза' : 'Воспроизвести'}">
+                    {#if isPlaying}
+                        ⏸️
+                    {:else}
+                        ▶️
+                    {/if}
+                </button>
+                
+                <button on:click={() => currentTickIndex < ticks.length - 1 ? currentTickIndex++ : currentTickIndex} class="icon-btn" title="Следующий кадр">
+                    ▶️
+                </button>
+                <button on:click={() => currentTickIndex = ticks.length - 1} class="icon-btn" title="В конец">
+                    ⏭️
+                </button>
+            </div>
+            
+            <div class="secondary-buttons">
+                <button on:click={resetAnimation} class="icon-btn reset-btn" title="Сбросить анимацию">
+                    🔄
+                </button>
+                <button on:click={decreaseSpeed} class="icon-btn speed-btn" title="Уменьшить скорость">
+                    ➖
+                </button>
+                <span class="speed-display">{playbackSpeed.toFixed(1)}x</span>
+                <button on:click={increaseSpeed} class="icon-btn speed-btn" title="Увеличить скорость">
+                    ➕
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
 <style>
-
-    /* .controls {
-        position: relative;
-        left: 15%;
-        transform: translateX(-15%);
-        background: rgba(0, 0, 0, 0.7);
-        padding: 15px;
-        border-radius: 10px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        z-index: 100;
-        width: 50%;
-    }
-
-    .slider {
-        width: 100%;
-        cursor: pointer;
-    }
-
-    .info {
-        color: white;
-        font-family: monospace;
-    } */
-
-    /* #full-visualizer {
-        display: flex;
-        position: relative;
-        flex-direction: column;
-        width: 100%;
-        height: 100%;
-    } */
-
     #visualizer-container {
         padding: 2%;
         display: flex;
         flex-direction: column;
         min-width: 1000px;
-        min-height: 800px; 
+        min-height: 900px; 
         width: 100%;
         height: 100%;
     }
@@ -458,13 +458,217 @@
         justify-content: center;
         flex: 1;
         position: relative;
-        min-height: 400px;
+        min-height: 700px;
         width: 100%;
         background: rgba(50, 50, 50, 0.05);
     }
 
     #game-canvas {
         position: absolute;
+        width: 100%;
+        height: 100%;
+        user-select: none;
+        -webkit-user-select: none;
+        cursor: default;
+    }
+
+    .controls-panel {
+        margin: 0 auto;  
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 90%;
+        max-width: 800px;
+        height: 20%;
+        backdrop-filter: blur(10px);
+    }
+
+    .slider-container {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+    }
+
+    .slider {
+        flex: 1;
+        height: 6px;
+        -webkit-appearance: none;
+        appearance: none;
+        background: #667eea;
+        cursor: pointer;
+    }
+
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: white;
+        border: 2px solid #667eea;
+        cursor: pointer;
+    }
+
+    .slider::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        background: white;
+        border: 2px solid #667eea;
+        cursor: pointer;
+    }
+
+    .frame-input-container {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        min-width: 100px;
+    }
+
+    .frame-input {
+        width: 60px;
+        padding: 8px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        color: white;
+        font-family: monospace;
+        font-size: 14px;
+        text-align: center;
+        outline: none;
+    }
+
+    .frame-input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+    }
+
+    .total-frames {
+        color: rgba(255, 255, 255, 0.7);
+        font-family: monospace;
+        font-size: 14px;
+    }
+
+    .compact-controls {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .nav-buttons, .secondary-buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 3px;
+        width: 100%;
+    }
+
+    .icon-btn {
+        width: 20px;
+        height: 20px;
+        padding: 0;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .icon-btn:active {
+        transform: translateY(0);
+    }
+
+    .play-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 22px;
+    }
+
+    .speed-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+    }
+
+
+    .speed-display {
+        color: white;
+        font-family: monospace;
+        font-size: 14px;
+        font-weight: bold;
+        min-width: 50px;
+        text-align: center;
+        padding: 5px;
+    }
+
+    @media (max-width: 768px) {
+        .controls-panel {
+            width: 95%;
+            padding: 12px;
+        }
+
+        .slider-container {
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .frame-input-container {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .compact-controls {
+            gap: 3px;
+        }
+
+        .nav-buttons, .secondary-buttons {
+            gap: 3px;
+        }
+
+        .icon-btn {
+            width: 35px;
+            height: 35px;
+            font-size: 16px;
+        }
+
+        .play-btn {
+            width: 45px;
+            height: 45px;
+            font-size: 20px;
+        }
+
+        .speed-btn {
+            width: 30px;
+            height: 30px;
+            font-size: 14px;
+        }
+
+        .speed-display {
+            font-size: 12px;
+            min-width: 40px;
+        }
+    }
+
+    #visualizer-container {
+        padding: 2%;
+        display: flex;
+        flex-direction: column;
+        min-width: 1000px;
+        min-height: 800px; 
+        width: 100%;
+        height: 100%;
+    }
+
+    #game-canvas {
+        position: relative;
         width: 100%;
         height: 100%;
         user-select: none;
@@ -485,24 +689,6 @@
 
     .frame-input[type="number"] {
         -moz-appearance: textfield;
-    }
-
-    .controls {
-        max-height: 20%;
-        position: relative;
-        background: rgba(0, 0, 0, 0.85);
-        margin: 10px auto;  
-        bottom: 20px;
-        padding: 20px;
-        border-radius: 15px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-        width: 80%;
-        max-width: 600px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .slider-container {
@@ -573,51 +759,13 @@
         font-size: 14px;
     }
     
-    .info {
-        color: white;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-size: 14px;
-        font-weight: 500;
-    }
-    
-    .buttons {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .btn {
-        padding: 8px 16px;
-        background: rgba(102, 126, 234, 0.8);
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-family: 'Segoe UI', sans-serif;
-        font-size: 14px;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-    
-    .btn:hover {
-        background: rgba(102, 126, 234, 1);
-        transform: translateY(-2px);
-    }
-    
-    .btn:active {
-        transform: translateY(0);
-    }
-    
     #game-canvas {
         position: relative;
         width: 100%;
         height: 80%;
         min-height: 0;
 
-        margin-bottom: 2%;
+        margin-bottom: 1%;
 
         user-select: none; 
         -webkit-user-select: none;
