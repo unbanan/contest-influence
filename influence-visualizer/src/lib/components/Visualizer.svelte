@@ -369,7 +369,7 @@
 
 </script>
 
-
+<div class="visualizer-outer">
 <div id="visualizer-container">
     <div class="canvas-wrapper">
         <div id="game-canvas" bind:this={container}></div>
@@ -439,10 +439,20 @@
         </div>
     </div>
 </div>
+</div>
 
 <style>
+     .visualizer-outer {
+        display: flex;
+        flex-direction: column;
+        min-width: 1000px;
+        min-height: 900px;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
     #visualizer-container {
-        padding: 2%;
         display: flex;
         flex-direction: column;
         min-width: 1000px;
@@ -458,9 +468,11 @@
         justify-content: center;
         flex: 1;
         position: relative;
+        overflow: auto;
         min-height: 700px;
         width: 100%;
         background: rgba(50, 50, 50, 0.05);
+        margin-bottom: 20%;
     }
 
     #game-canvas {
@@ -473,16 +485,35 @@
     }
 
     .controls-panel {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 90%;
+        max-width: 1200px;
+        min-height: 120px;
+        border-radius: 10px;
+        box-sizing: border-box;
+        z-index: 100;
+        margin: 0 auto;
+    }
+
+    /* .controls-panel {
+        position: fixed;
+        bottom: 50px;
         margin: 0 auto;  
         padding: 5px;
         display: flex;
         flex-direction: column;
         align-items: center;
         width: 90%;
-        max-width: 800px;
-        height: 20%;
-        backdrop-filter: blur(10px);
-    }
+        height: 120px;
+        min-height: 120px;
+    } */
 
     .slider-container {
         width: 100%;
@@ -609,8 +640,9 @@
         padding: 5px;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 800px) {
         .controls-panel {
+            margin: 10 auto;
             width: 95%;
             padding: 12px;
         }
@@ -658,7 +690,6 @@
     }
 
     #visualizer-container {
-        padding: 2%;
         display: flex;
         flex-direction: column;
         min-width: 1000px;
