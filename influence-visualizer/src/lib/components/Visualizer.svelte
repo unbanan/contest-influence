@@ -382,7 +382,7 @@
                 min="0" 
                 max={ticks.length - 1} 
                 bind:value={currentTickIndex} 
-                class="slider"
+                class="slider some-touchable"
                 title="Перемотка по кадрам"
             />
             <div class="frame-input-container">
@@ -392,7 +392,7 @@
                     on:keypress={handleKeyPress}
                     min="0"
                     max={ticks.length - 1}
-                    class="frame-input"
+                    class="frame-input some-touchable"
                     title="Номер кадра"
                 />
                 <span class="total-frames">/ {ticks.length - 1}</span>
@@ -401,14 +401,14 @@
         
         <div class="compact-controls">
             <div class="nav-buttons">
-                <button on:click={() => currentTickIndex = 0} class="icon-btn" title="В начало">
+                <button on:click={() => currentTickIndex = 0} class="icon-btn some-button" title="В начало">
                     ⏮️
                 </button>
-                <button on:click={() => currentTickIndex > 0 ? currentTickIndex-- : null} class="icon-btn" title="Предыдущий кадр">
+                <button on:click={() => currentTickIndex > 0 ? currentTickIndex-- : null} class="icon-btn some-button" title="Предыдущий кадр">
                     ◀️
                 </button>
                 
-                <button on:click={togglePlayPause} class="icon-btn play-btn" title="{isPlaying ? 'Пауза' : 'Воспроизвести'}">
+                <button on:click={togglePlayPause} class="icon-btn play-btn some-button" title="{isPlaying ? 'Пауза' : 'Воспроизвести'}">
                     {#if isPlaying}
                         ⏸️
                     {:else}
@@ -416,23 +416,23 @@
                     {/if}
                 </button>
                 
-                <button on:click={() => currentTickIndex < ticks.length - 1 ? currentTickIndex++ : currentTickIndex} class="icon-btn" title="Следующий кадр">
+                <button on:click={() => currentTickIndex < ticks.length - 1 ? currentTickIndex++ : currentTickIndex} class="icon-btn some-button" title="Следующий кадр">
                     ▶️
                 </button>
-                <button on:click={() => currentTickIndex = ticks.length - 1} class="icon-btn" title="В конец">
+                <button on:click={() => currentTickIndex = ticks.length - 1} class="icon-btn some-button" title="В конец">
                     ⏭️
                 </button>
             </div>
             
             <div class="secondary-buttons">
-                <button on:click={resetAnimation} class="icon-btn reset-btn" title="Сбросить анимацию">
+                <button on:click={resetAnimation} class="icon-btn reset-btn some-button" title="Сбросить анимацию">
                     🔄
                 </button>
-                <button on:click={decreaseSpeed} class="icon-btn speed-btn" title="Уменьшить скорость">
+                <button on:click={decreaseSpeed} class="icon-btn speed-btn some-button" title="Уменьшить скорость">
                     ➖
                 </button>
                 <span class="speed-display">{playbackSpeed.toFixed(1)}x</span>
-                <button on:click={increaseSpeed} class="icon-btn speed-btn" title="Увеличить скорость">
+                <button on:click={increaseSpeed} class="icon-btn speed-btn some-button" title="Увеличить скорость">
                     ➕
                 </button>
             </div>
@@ -476,12 +476,13 @@
     }
 
     #game-canvas {
-        position: absolute;
+        position: relative;
         width: 100%;
         height: 100%;
         user-select: none;
         -webkit-user-select: none;
         cursor: default;
+        z-index: 100;
     }
 
     .controls-panel {
@@ -500,8 +501,17 @@
         box-sizing: border-box;
         z-index: 100;
         margin: 0 auto;
+        pointer-events: none;
+        /* pointer-events: all; */
     }
 
+    .some-button {
+        pointer-events: all;
+    }
+
+    .some-touchable {
+        pointer-events: all;
+    }
     /* .controls-panel {
         position: fixed;
         bottom: 50px;
@@ -534,16 +544,16 @@
     .slider::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
-        width: 20px;
-        height: 20px;
+        width: 21px;
+        height: 21px;
         background: white;
         border: 2px solid #667eea;
         cursor: pointer;
     }
 
     .slider::-moz-range-thumb {
-        width: 20px;
-        height: 20px;
+        width: 21px;
+        height: 21px;
         background: white;
         border: 2px solid #667eea;
         cursor: pointer;
@@ -564,7 +574,7 @@
         border-radius: 6px;
         color: white;
         font-family: monospace;
-        font-size: 14px;
+        font-size: 15px;
         text-align: center;
         outline: none;
     }
@@ -577,7 +587,7 @@
     .total-frames {
         color: rgba(255, 255, 255, 0.7);
         font-family: monospace;
-        font-size: 14px;
+        font-size: 15px;
     }
 
     .compact-controls {
@@ -595,13 +605,13 @@
     }
 
     .icon-btn {
-        width: 20px;
-        height: 20px;
+        width: 21px;
+        height: 21px;
         padding: 0;
         border: none;
         color: white;
         cursor: pointer;
-        font-size: 18px;
+        font-size: 19px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -618,22 +628,22 @@
     }
 
     .play-btn {
-        width: 50px;
-        height: 50px;
-        font-size: 22px;
+        width: 51px;
+        height: 51px;
+        font-size: 23px;
     }
 
     .speed-btn {
         width: 35px;
         height: 35px;
-        font-size: 16px;
+        font-size: 17px;
     }
 
 
     .speed-display {
         color: white;
         font-family: monospace;
-        font-size: 14px;
+        font-size: 15px;
         font-weight: bold;
         min-width: 50px;
         text-align: center;
@@ -668,23 +678,23 @@
         .icon-btn {
             width: 35px;
             height: 35px;
-            font-size: 16px;
+            font-size: 17px;
         }
 
         .play-btn {
             width: 45px;
             height: 45px;
-            font-size: 20px;
+            font-size: 21px;
         }
 
         .speed-btn {
-            width: 30px;
-            height: 30px;
-            font-size: 14px;
+            width: 31px;
+            height: 31px;
+            font-size: 15px;
         }
 
         .speed-display {
-            font-size: 12px;
+            font-size: 13px;
             min-width: 40px;
         }
     }
@@ -774,7 +784,7 @@
         border-radius: 6px;
         color: white;
         font-family: monospace;
-        font-size: 14px;
+        font-size: 15px;
         text-align: center;
         outline: none;
     }
@@ -787,7 +797,7 @@
     .total-frames {
         color: rgba(255, 255, 255, 0.7);
         font-family: monospace;
-        font-size: 14px;
+        font-size: 15px;
     }
     
     #game-canvas {
