@@ -2,7 +2,7 @@ package protobuf
 
 import (
 	simulation "contest-influence/proto/simulation"
-	"math/rand"
+	"math/rand"FieldMask
 )
 
 type MapFactory struct{}

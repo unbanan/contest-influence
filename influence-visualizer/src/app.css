@@ -2,11 +2,16 @@
     --primary-bg-color: #353b48;
 }
 * {
-    margin: none;
-    padding: none;
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 
+html {
+    height: 100%;
+} 
+
 body {
+    min-height: 100%;
     background-color: var(--primary-bg-color);
 }

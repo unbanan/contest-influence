@@ -1,54 +1,45 @@
 <script lang="ts">
     import { page } from '$app/state';
+    import Visualizer from '$lib/components/Visualizer.svelte';
+
     const number = page.params.number;
 
-    import { onMount, onDestroy } from 'svelte';
-    import Two from 'two.js';
 
-    class Cell {
-		x: number;
-		y: number;
-		value: number;
-		color: string;
-		isBig: boolean;
-		label: string;
-        constructor(x: number, y: number, value: number, color: string, isBig: boolean, label: string) {
-            this.x = x;
-            this.y = y;
-            this.value = value;
-            this.color = color;
-            this.isBig = isBig;
-            this.label = label;
-        }
+    export let data;
+    interface Position {
+        row: number,
+        col: number,
+    }
+    interface Cell {
+        row: number,
+        col: number,
+        value: number,
+    };
+
+    interface AttackMove {
+        from: Cell,
+        to: Cell,
+        is_winner: boolean,
     }
 
-    class Player {
-        name: string;
-        color: string;
-        constructor(name: string, color: string) {
-            this.name = name;
-            this.color = color;
-        }
+    interface Attack {
+        moves: AttackMove[],
     }
 
-    class Field {
-        cells: Cell[][];
-        constructor(cells: Cell[][]) {
-            this.cells = cells.map(row =>
-                row.map(cell => ({ ...cell }))
-            )
-        }
+    interface Defence {
+        cells: Cell[],
     }
 
-    class Tick {
-        field: Field;
-        turn: number;
-        constructor(field: Field, turn: number) {
-            this.field = new Field(field.cells);
-            this.turn = turn;
-        }
-    }
-
+    interface Round {
+        attack: Attack;
+        defence: Defence;
+    };
+    const nrows: number = data.data.map.nrows;
+    const ncols: number = data.data.map.ncols;
+    const field: boolean[] = data.data.map.fieldMask;
+    const start_positions: Position[] = data.data.start_positions;
+    const big_cells: Position[] = data.data.map.bigCells;
+    const rounds: Round[] = data.data.rounds;
 </script>
 
 <svelte:head>
@@ -56,6 +47,35 @@
     
 </svelte:head>
 
-
-<div id="game-canvas">
+<div class="page-container">
+    <div class="visualizer-wrapper">
+        <Visualizer 
+            n={nrows} 
+            m={ncols} 
+            fieldMask={field} 
+            start_positions={start_positions} 
+            big_cells={big_cells} 
+            rounds={rounds}
+        />
+    </div>
 </div>
+
+<style>
+    .page-container {
+        width: 100%;
+        height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .visualizer-wrapper {
+        width: 100%;
+        height: 100%;
+        background-color: var(--primary-bg-color);
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+    }
+</style>
