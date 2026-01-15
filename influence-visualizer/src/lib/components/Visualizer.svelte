@@ -562,7 +562,7 @@
         width: 100%;
         display: flex;
         align-items: center;
-        gap: 3px;
+        gap: 5px;
     }
 
     .slider {
@@ -633,7 +633,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 3px;
+        gap: 5px;
         width: 100%;
     }
 
@@ -648,7 +648,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .icon-btn:hover {
@@ -692,7 +692,7 @@
 
         .slider-container {
             flex-direction: column;
-            gap: 3px;
+            gap: 5px;
         }
 
         .frame-input-container {
@@ -701,11 +701,11 @@
         }
 
         .compact-controls {
-            gap: 3px;
+            gap: 5px;
         }
 
         .nav-buttons, .secondary-buttons {
-            gap: 3px;
+            gap: 5px;
         }
 
         .icon-btn {
