@@ -83,7 +83,7 @@
 <div id="my-main-page-container" class="page-container">
     <ul class="overlay-list">
         {#each names as name, i}
-            <li class="overlay-list-item" style="font-weight: 900; -webkit-text-stroke: 0.7px black; color: hsla({360 / (names.length + 2) * (i + 1)}, 50%, 60%, 1)">
+            <li class="overlay-list-item" style="font-weight: 900; -webkit-text-stroke: 0.2px black; color: hsla({360 / (names.length + 2) * (i + 1)}, 50%, 60%, 1)">
                 {name}: {currentScores[name] ?? 0}
             </li>
         {/each}
@@ -104,6 +104,9 @@
 
 <style>
     .overlay-list {
+        background-color: rgba(0, 0, 0, 0.1);
+        padding-top: 10px;
+        padding-right: 10px;
         position: absolute;
         pointer-events: none;
         z-index: 1000;
@@ -116,8 +119,7 @@
 
     .overlay-list-item {
         margin-left: 10px;
-        margin-top: 10px;
-        font-size: 4vh;
+        font-size: min(4vh, 16px);
         font-family: "Courier New", Courier, monospace;
     }
     .page-container {
