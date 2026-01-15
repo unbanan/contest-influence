@@ -1,17 +1,17 @@
 :root {
-    --primary-bg-color: #353b48;
+	--primary-bg-color: #353b48;
 }
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
 
 html {
-    height: 100%;
-} 
+	height: 100%;
+}
 
 body {
-    min-height: 100%;
-    background-color: var(--primary-bg-color);
+	min-height: 100%;
+	background-color: var(--primary-bg-color);
 }
