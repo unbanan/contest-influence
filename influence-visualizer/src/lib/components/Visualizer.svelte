@@ -90,7 +90,7 @@
     let field;
     let grid: GridCell[][];
 
-    let currentTickIndex = 0;
+    export let currentTickIndex = 0;
     let isPlaying = false;
 
 
@@ -449,7 +449,7 @@
         min-height: 900px;
         width: 100%;
         height: 100%;
-        position: relative;
+        position: absolute;
         overflow: hidden;
     }
     #visualizer-container {
@@ -467,22 +467,25 @@
         justify-items: center;
         justify-content: center;
         flex: 1;
-        position: relative;
+        position: absolute;
         overflow: auto;
         min-height: 700px;
+        height: 70%;
         width: 100%;
         background: rgba(50, 50, 50, 0.05);
-        margin-bottom: 20%;
+        margin-top: 5%;
+        margin-bottom: calc(max(10%, 200px));
+
     }
 
     #game-canvas {
-        position: relative;
+        position: absolute;
         width: 100%;
         height: 100%;
+        overflow: auto;
         user-select: none;
         -webkit-user-select: none;
         cursor: default;
-        z-index: 100;
     }
 
     .controls-panel {
@@ -499,7 +502,6 @@
         min-height: 120px;
         border-radius: 10px;
         box-sizing: border-box;
-        z-index: 100;
         margin: 0 auto;
         pointer-events: none;
         /* pointer-events: all; */
@@ -709,10 +711,11 @@
     }
 
     #game-canvas {
-        position: relative;
+        position: absolute;
         width: 100%;
         height: 100%;
         user-select: none;
+        overflow: auto;
         -webkit-user-select: none;
         cursor: default;
     }
@@ -801,11 +804,11 @@
     }
     
     #game-canvas {
-        position: relative;
+        position: absolute;
         width: 100%;
-        height: 80%;
+        height: 100%;
         min-height: 0;
-
+        overflow: auto;
         margin-bottom: 1%;
 
         user-select: none; 
