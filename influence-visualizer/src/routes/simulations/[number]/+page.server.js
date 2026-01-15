@@ -22,16 +22,10 @@ export async function load({ params }) {
                                 },
                                 is_winner: true,
                                 statistics: {
-                                    players: [
-                                        {
-                                            name: "Nikitos",
-                                            score: 2,
-                                        },
-                                        {
-                                            name: "Matvey",
-                                            score: 1,
-                                        }
-                                    ]
+                                    scores: {
+                                        "Nikitos": 2,
+                                        "Matvey": 1,
+                                    }
                                 }
                             }
                         ]
@@ -45,16 +39,10 @@ export async function load({ params }) {
                             }
                         ],
                         statistics: {
-                            players: [
-                                {
-                                    name: "Nikitos",
-                                    score: 2,
-                                },
-                                {
-                                    name: "Matvey",
-                                    score: 1,
-                                }
-                            ]
+                            scores: {
+                                "Nikitos": 2,
+                                "Matvey": 1,
+                            }
                         }
                     }
                 },
@@ -74,16 +62,10 @@ export async function load({ params }) {
                                 },
                                 is_winner: true,
                                 statistics: {
-                                    players: [
-                                        {
-                                            name: "Nikitos",
-                                            score: 2,
-                                        },
-                                        {
-                                            name: "Matvey",
-                                            score: 2,
-                                        }
-                                    ]
+                                    scores: {
+                                        "Nikitos": 2,
+                                        "Matvey": 2,
+                                    }
                                 }
                             }
                         ]   
@@ -97,16 +79,10 @@ export async function load({ params }) {
                             }
                         ],
                         statistics: {
-                            players: [
-                                {
-                                    name: "Nikitos",
-                                    score: 2,
-                                },
-                                {
-                                    name: "Matvey",
-                                    score: 2,
-                                }
-                            ]
+                            scores: {
+                                "Nikitos": 2,
+                                "Matvey": 2,
+                            }
                         }
                     }
                 }
@@ -151,8 +127,8 @@ export async function load({ params }) {
                 {row: 2, col: 2},
             ],
             names: [
-                "Matvey",
                 "Nikitos",
+                "Matvey",
             ]
         }
     };

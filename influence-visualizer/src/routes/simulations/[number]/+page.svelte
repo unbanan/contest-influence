@@ -36,6 +36,11 @@
         attack: Attack;
         defence: Defence;
     };
+
+    interface Statistics {
+        scores: Record<string, number>,
+    }
+
     const nrows: number = data.data.map.nrows;
     const ncols: number = data.data.map.ncols;
     const field: boolean[] = data.data.map.fieldMask;
@@ -44,6 +49,7 @@
     const rounds: Round[] = data.data.rounds;
     const names: string[] = data.data.names;
     const colors: number[] = [];
+    const colorMap: Map<string, string> = new Map();
     
     import { onMount } from 'svelte';
 
@@ -60,21 +66,13 @@
         for (let i = 0; i < names.length; i++) {
             colors.push(360 / (names.length + 2) * (i + 1));
         }
-        const colorMap: Map<string, string> = new Map();
         for (let i = 0; i < names.length; i++) {
             colorMap.set(names[i], `hsla(${colors[i]}, 50%, 60%, 1)`)
         }
-        //const mainContainer = document.getElementById('my-main-page-container');
 
+        
     });
-
-    interface PlayerStats {
-        name: string,
-        score: number,
-    }
-    interface Statistics {
-        players: PlayerStats[],
-    }
+    let currentScores: Record<string, number> = {};
 </script>
 
 <svelte:head>
@@ -83,14 +81,23 @@
 </svelte:head>
 
 <div id="my-main-page-container" class="page-container">
+    <ul class="overlay-list">
+        {#each names as name, i}
+            <li class="overlay-list-item" style="font-weight: 900; -webkit-text-stroke: 0.7px black; color: hsla({360 / (names.length + 2) * (i + 1)}, 50%, 60%, 1)">
+                {name}: {currentScores[name] ?? 0}
+            </li>
+        {/each}
+    </ul>
     <div class="visualizer-wrapper">
         <Visualizer 
+            bind:currentScores={currentScores}
             n={nrows} 
             m={ncols} 
             fieldMask={field} 
             start_positions={start_positions} 
             big_cells={big_cells} 
             rounds={rounds}
+            names={names}
         />
     </div>
 </div>
@@ -98,7 +105,20 @@
 <style>
     .overlay-list {
         position: absolute;
+        pointer-events: none;
         z-index: 1000;
+
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+    }
+
+    .overlay-list-item {
+        margin-left: 10px;
+        margin-top: 10px;
+        font-size: 4vh;
+        font-family: "Courier New", Courier, monospace;
     }
     .page-container {
         position: absolute;

@@ -6,6 +6,7 @@
     export let start_positions: Position[];
     export let big_cells: Position[];
     export let rounds: Round[];
+    export let names: string[];
 
     let canvasWidth: number = 0;
     let canvasHeight: number = 0;
@@ -21,6 +22,7 @@
         from: Cell,
         to: Cell,
         is_winner: boolean,
+        statistics: Statistics,
     }
 
     interface Attack {
@@ -29,6 +31,7 @@
 
     interface Defence {
         cells: Cell[],
+        statistics: Statistics,
     }
 
     interface Round {
@@ -49,6 +52,11 @@
     $: if (grid && ticks[currentTickIndex]) {
         showTick(ticks[currentTickIndex], grid, two);
         if (typeof two !== 'undefined') two.update();
+    }
+
+    export let currentScores: Record<string, number> = {};
+    $: if (ticks[currentTickIndex]) {
+        currentScores = ticks[currentTickIndex].statistics.scores;
     }
 
     const colors: number[] = []
@@ -79,8 +87,13 @@
         value: number,
     }
 
+    interface Statistics {
+        scores: Record<string, number>,
+    }
+
     interface Field {
         field: FieldCell[][],
+        statistics: Statistics,
     }
 
     const ticks: Field[] = [];
@@ -123,19 +136,27 @@
             for (let move of round.attack.moves) {
                 ticks[id] = {
                     field: structuredClone(ticks[id - 1].field),
+                    statistics: structuredClone(ticks[id - 1].statistics),
                 };
                 ticks[id].field[move.from.row][move.from.col].value = move.from.value;
                 ticks[id].field[move.to.row][move.to.col].value = move.to.value;
                 if (move.is_winner) {
                     ticks[id].field[move.to.row][move.to.col].color = ticks[id].field[move.from.row][move.from.col].color;
+                }
+                for (const name of names) {
+                    ticks[id].statistics.scores[name] = move.statistics.scores[name];
                 }  
                 id++;
             }
             for (let cell of round.defence.cells) {
                 ticks[id] = {
                     field: structuredClone(ticks[id - 1].field),
+                    statistics: structuredClone(ticks[id - 1].statistics),
                 };
                 ticks[id].field[cell.row][cell.col].value = cell.value;
+                for (const name of names) {
+                    ticks[id].statistics.scores[name] = round.defence.statistics.scores[name];
+                }
                 id++;
             }
         }
@@ -165,7 +186,17 @@
     function initGrid(two: Two, field: Group, grid: GridCell[][], R: number, r: number, sides: number, text_size: number, fld: Field[]) {
         fld[0] = {
             field: [],
+            statistics: {
+                scores: {
+
+                }
+            }
         };
+        
+        for (let name of names) {
+            fld[0].statistics.scores[name] = 0;    
+        }
+
         for (let i = 0; i < h_n; i++) {
             grid[i] = []
             fld[0].field[i] = []
