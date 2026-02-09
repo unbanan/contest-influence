@@ -668,22 +668,28 @@
 		align-items: center;
 		gap: 5px;
 		width: 100%;
+		min-height: 70px;
 	}
 
 	.icon-btn {
-		width: 21px;
-		height: 21px;
+		width: 40px;
+		height: 40px;
 		padding: 0;
 		border: none;
 		color: white;
 		cursor: pointer;
-		font-size: 19px;
+		font-size: 18px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		transition:
 			transform 0.2s ease,
 			box-shadow 0.2s ease;
+		backface-visibility: hidden;
+		-webkit-backface-visibility: hidden;
+		-webkit-font-smoothing: antialiased;
+		text-rendering: geometricPrecision;
+		-webkit-text-stroke: 0.01em transparent;
 	}
 
 	.icon-btn:hover {
@@ -696,15 +702,15 @@
 	}
 
 	.play-btn {
-		width: 51px;
-		height: 51px;
-		font-size: 23px;
+		width: 40px;
+		height: 40px;
+		font-size: 18px;
 	}
 
 	.speed-btn {
-		width: 35px;
-		height: 35px;
-		font-size: 17px;
+		width: 40px;
+		height: 40px;
+		font-size: 18px;
 	}
 
 	.speed-display {
@@ -744,21 +750,21 @@
 		}
 
 		.icon-btn {
-			width: 35px;
-			height: 35px;
-			font-size: 17px;
+			width: 45px;
+			height: 45px;
+			font-size: 20px;
 		}
 
 		.play-btn {
 			width: 45px;
 			height: 45px;
-			font-size: 21px;
+			font-size: 20px;
 		}
 
 		.speed-btn {
-			width: 31px;
-			height: 31px;
-			font-size: 15px;
+			width: 45px;
+			height: 45px;
+			font-size: 20px;
 		}
 
 		.speed-display {
