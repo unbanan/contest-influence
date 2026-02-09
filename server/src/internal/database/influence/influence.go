@@ -1,6 +1,7 @@
 package influence
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"contest-influence/server/internal/config"
@@ -49,8 +50,8 @@ func (r *InfluenceDBRepoImpl) Register(id int64, name string) error {
 }
 
 type User struct {
-	ID   int64  `db:"id"`
-	Name string `db:"name"`
+	ID           int64  `db:"id"`
+	Name         string `db:"name"`
 	RegisteredAt string `db:"registered_at"`
 }
 
@@ -81,7 +82,7 @@ func (r *InfluenceDBRepoImpl) GetSimulationPlayers(id uuid.UUID) ([]User, error)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return users, nil
 }
 
@@ -100,7 +101,7 @@ func (r *InfluenceDBRepoImpl) GetSimulation(id uuid.UUID) (*simulation_types.Sim
 
 	simdata := make([]byte, 0)
 	mapdata := make([]byte, 0)
-	fmt.Println(id);
+	fmt.Println(id)
 	err = r.db.QueryRowx(
 		`
 		SELECT
