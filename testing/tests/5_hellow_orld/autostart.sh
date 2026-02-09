@@ -1,0 +1,1 @@
+echo 'hweloworwd!' >> /answer/pickme.hw
