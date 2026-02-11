@@ -553,7 +553,7 @@
 
 	.controls-panel {
 		position: fixed;
-		bottom: 20px;
+		bottom: 10px;
 		left: 50%;
 		transform: translateX(-50%);
 		padding: 15px;
@@ -657,7 +657,10 @@
 
 	.compact-controls {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		gap: 10px;
 		width: 100%;
 	}
 
@@ -667,8 +670,8 @@
 		justify-content: center;
 		align-items: center;
 		gap: 5px;
-		width: 100%;
-		min-height: 70px;
+		width: auto;
+		min-height: 40px;
 	}
 
 	.icon-btn {
@@ -741,12 +744,16 @@
 		}
 
 		.compact-controls {
+			display: flex;
+			flex-direction: column;
 			gap: 5px;
 		}
 
 		.nav-buttons,
 		.secondary-buttons {
 			gap: 5px;
+			width: 100%;
+			min-height: 70px;
 		}
 
 		.icon-btn {
