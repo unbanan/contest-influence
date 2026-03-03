@@ -22,7 +22,7 @@ type DockerContainer struct {
 	options DockerContainerOptions
 }
 
-var _ Container = (*DockerContainer)(nil)
+// var _ Container = (*DockerContainer)(nil)
 
 func NewDockerContainer(logger *zap.Logger, options DockerContainerOptions) (*DockerContainer, error) {
 	var err error

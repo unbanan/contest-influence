@@ -1,4 +1,4 @@
-module container-pool
+module contest-influence/container-pool
 
 go 1.25.5
 
